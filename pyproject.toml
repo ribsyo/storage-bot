@@ -2,7 +2,7 @@
 name = "storage-bot"
 version = "0.1.0"
 description = ""
-authors = ["Your Name <you@example.com>"]
+authors = ["alex <alexqing2005@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
