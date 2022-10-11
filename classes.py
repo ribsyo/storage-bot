@@ -111,12 +111,3 @@ class DriveManager:
             file = None
         os.remove('temporaryfile')
 
-test = DriveManager()
-with open('cat.jpg','rb') as f:
-    testCommand = File(
-        file_name='cats.jpg',
-        file_type='image/jpeg',
-        file_content=f.read()
-    )
-
-test.save_file(testCommand)
