@@ -26,7 +26,7 @@ verify_key = VerifyKey(bytes.fromhex(PUBLIC_KEY))
 app = FastAPI()
 
 quoteFileManager = FileManager("quotes.txt")
-quoteManager = QuoteManager(quoteFileManager.give_all_lines())
+quoteManager = QuoteManager(quoteFileManager.get_all_lines())
 
 @app.get("/")
 def hi():
