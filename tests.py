@@ -26,16 +26,28 @@ def test_QuoteManager_give_quote():
         f.close()
     assert quoteManager.give_quote() == test_command
 
+
 def test_FileManager_set_file():
-    fileManager = new FileManager("test.txt")
+    fileManager = FileManager("test.txt")
     testPath = "pathTest.txt"
     fileManager.set_file(testPath)
-    assert testPath == getAttr(fileManager, path)
-    assert open(testPath, "a+").read().splitlines() == getAttr(fileManager, fileContent)
+    assert testPath == getattr(fileManager, 'path')
+    assert open(testPath, "a+").read().splitlines() == getattr(fileManager, 'fileContent')
 
-def test_FileManager_give_all_lines():
-    fileManager = new FileManager("test.txt")
-    with open(test.txt, "a+") as f:
+def test_FileManager_get_all_lines():
+    fileManager = FileManager("test.txt")
+    with open("test.txt", "a+") as f:
         content = f.read().splitlines()
-    assert fileManager.get_all_lines() == content
+    result = fileManager.get_all_lines()
+    x = 0
+    for line in content:
+        assert result[x] == content[x]
+        x += 1
 
+def test_FileManager_get_line():
+    content = "hello"
+    with open("test.txt", "w") as f:
+        f.write(content)
+        f.close()
+    fileManager = FileManager("test.txt")
+    assert content == fileManager.get_line(len(getattr(fileManager, 'fileContent')) - 1)
