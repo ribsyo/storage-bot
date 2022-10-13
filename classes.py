@@ -1,6 +1,6 @@
-from asyncore import read
 from models import Quote, File
 
+import magic
 import os.path
 from stat import ST_SIZE
 
@@ -13,19 +13,23 @@ from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaFileUpload
 
 
+
+
 class FileManager:
 
     def __init__(self, path: str):
         self.path = path
         self.fileContent = []
-        self.file = open(self.path,"r")
+        self.file = open(self.path,"a+")
         self.fileContent = self.file.read().splitlines()
+        self.mime = magic.Magic(mime=True)
         self.file.close()
+        
 
-    def give_line(self, line: int):
+    def get_line(self, line: int):
         return self.fileContent[line]
 
-    def give_all_lines(self):
+    def get_all_lines(self):
         return self.fileContent
 
     def write_to_file(self, content: any):
@@ -35,6 +39,15 @@ class FileManager:
 
     def file_length(self):
         return len(self.fileContent)
+    
+    def get_file(self):
+        fileCommand = File(
+            file_name=self.path,
+            file_type=self.mime.from_file(self.path),
+            file_content=open(self.path,'rb').read()
+        )
+        print(self.path)
+        return fileCommand
 
     def set_file(self, path: str):
         self.path = path
@@ -42,6 +55,27 @@ class FileManager:
         self.file = open(self.path,"a+")
         self.fileContent = self.file.read().splitlines()
         self.file.close()
+
+class FileSearcher:
+
+    def __init__(self, fileManager: FileManager, folder: str):
+        self.fileManager = fileManager
+        self.dir_path = os.path.dirname(os.path.realpath(__file__))
+        self.dir_path += "/"+folder
+        print(self.dir_path)
+        
+
+    def get_all_files(self):
+        for root, dirs, files in os.walk(self.dir_path):
+            for file in files:
+                print (str(file))
+
+    def get_file(self, path: str):
+        self.fileManager.set_file(path)
+        fileCommand = self.fileManager.get_file()
+        tempStr = fileCommand.file_name.split('/')
+        fileCommand.file_name=tempStr[len(tempStr) - 1]
+        return fileCommand
 
 class QuoteManager:
 
@@ -63,7 +97,7 @@ class QuoteManager:
         if(contains_quote is False):
             self.quoteSuggestions.append("\n" + command.quote)
 
-    def give_quote(self) -> str:
+    def get_quote(self) -> str:
         self.lastQuoteGiven += 1
         command = Quote(
             quote = self.quotes[self.lastQuoteGiven]
@@ -72,7 +106,7 @@ class QuoteManager:
             self.lastQuoteGiven = -1
         return command
 
-    def give_quote_suggestions(self):
+    def get_quote_suggestions(self):
         return self.quoteSuggestions
 
 
@@ -111,3 +145,9 @@ class DriveManager:
             file = None
         os.remove('temporaryfile')
 
+test = FileSearcher(FileManager("test.txt"),"files")
+test.get_all_files()
+test = test.get_file("files/cat.jpg")
+with open(test.file_name,'wb') as f:
+    f.write(test.file_content)
+    f.close()
