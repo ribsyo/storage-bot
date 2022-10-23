@@ -169,4 +169,3 @@ class DriveManager:
             file = None
         os.remove('temporaryfile')
 
-test = DiscordFileManager(FileManager('cat.jpg'),"/files/")
