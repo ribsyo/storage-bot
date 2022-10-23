@@ -1,4 +1,5 @@
-from models import Quote, File
+from ast import Str
+from models import Quote, File, GetFileCommand
 
 import magic
 import os.path
@@ -19,25 +20,46 @@ class FileManager:
 
     def __init__(self, path: str):
         self.path = path
-        self.fileContent = []
-        self.file = open(self.path,"a+")
-        self.fileContent = self.file.read().splitlines()
         self.mime = magic.Magic(mime=True)
-        self.file.close()
-        
 
+        
+        
     def get_line(self, line: int):
+        self.fileContent = []
+        self.file = open(self.path,"r")
+        self.fileContent = self.file.read().splitlines()
+        self.file.close()
         return self.fileContent[line]
 
     def get_all_lines(self):
+        self.fileContent = []
+        self.file = open(self.path,"r")
+        self.fileContent = self.file.read().splitlines()
+        self.file.close()
         return self.fileContent
 
-    def write_to_file(self, content: any):
+    def write_to_file(self, content: Str):
         self.file = open(self.path,"w")
         self.file.write(content)
-        self.file.close
+        self.file.close()
+
+    def write_file(self, content: bytes):
+        self.file = open(self.path,"wb")
+        self.file.write(content)
+        self.file.close()
+
+    def append_to_file(self, content: any):
+        self.file = open(self.path,"a")
+        if os.path.getsize(self.path) != 0:
+            content = "\n" + content
+        self.file.write(content)
+        self.file.close()
 
     def file_length(self):
+        self.fileContent = []
+        self.file = open(self.path,"r")
+        self.fileContent = self.file.read().splitlines()
+        self.file.close()
         return len(self.fileContent)
     
     def get_file(self):
@@ -46,17 +68,12 @@ class FileManager:
             file_type=self.mime.from_file(self.path),
             file_content=open(self.path,'rb').read()
         )
-        print(self.path)
         return fileCommand
 
     def set_file(self, path: str):
         self.path = path
-        self.fileContent = []
-        self.file = open(self.path,"a+")
-        self.fileContent = self.file.read().splitlines()
-        self.file.close()
 
-class FileSearcher:
+class DiscordFileManager:
 
     def __init__(self, fileManager: FileManager, folder: str):
         self.fileManager = fileManager
@@ -66,16 +83,23 @@ class FileSearcher:
         
 
     def get_all_files(self):
+        fileList = []
         for root, dirs, files in os.walk(self.dir_path):
             for file in files:
-                print (str(file))
+                fileList.append(str(file))
+        return fileList
 
     def get_file(self, path: str):
-        self.fileManager.set_file(path)
-        fileCommand = self.fileManager.get_file()
-        tempStr = fileCommand.file_name.split('/')
-        fileCommand.file_name=tempStr[len(tempStr) - 1]
-        return fileCommand
+        getFileCommand = GetFileCommand(
+            file_name=path,
+            file_content=open(self.dir_path + path,"rb")
+        )
+        return getFileCommand
+    
+    def save_file(self, file: File):
+        self.fileManager.set_file(self.dir_path + file.file_name)
+        self.fileManager.write_file(file.file_content)
+
 
 class QuoteManager:
 
@@ -145,9 +169,4 @@ class DriveManager:
             file = None
         os.remove('temporaryfile')
 
-test = FileSearcher(FileManager("test.txt"),"files")
-test.get_all_files()
-test = test.get_file("files/cat.jpg")
-with open(test.file_name,'wb') as f:
-    f.write(test.file_content)
-    f.close()
+test = DiscordFileManager(FileManager('cat.jpg'),"/files/")

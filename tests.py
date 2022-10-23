@@ -1,7 +1,7 @@
 from models import Quote, File
 from classes import FileManager, QuoteManager
 import unittest
-import requests
+
 
 
 
@@ -24,8 +24,7 @@ def test_QuoteManager_give_quote():
     with open(test_path, 'r') as f:
         quoteManager = QuoteManager(f.read().splitlines())
         f.close()
-    assert quoteManager.give_quote() == test_command
-
+    assert quoteManager.get_quote() == test_command
 
 def test_FileManager_set_file():
     fileManager = FileManager("test.txt")
@@ -47,7 +46,26 @@ def test_FileManager_get_all_lines():
 def test_FileManager_get_line():
     content = "hello"
     with open("test.txt", "w") as f:
+        f.write("content\n" + content + "\ncontent")
+        f.close()
+    fileManager = FileManager("test.txt")
+    assert content == fileManager.get_line(len(getattr(fileManager, 'fileContent')) - 2)
+
+def test_FileManager_write_to_file():
+    content = "hello"
+    fileManager = FileManager("test.txt")
+    fileManager.write_to_file(content)
+    with open("test.txt", "r") as f:
+        assert f.read() == content
+
+def test_FileManager_append_to_file():
+    content = "hello"
+    with open("test.txt", "w") as f:
         f.write(content)
         f.close()
     fileManager = FileManager("test.txt")
-    assert content == fileManager.get_line(len(getattr(fileManager, 'fileContent')) - 1)
+    fileManager.append_to_file(content)
+    with open("test.txt", "r") as f:
+        fileContent = f.read().splitlines()
+        assert fileContent[len(fileContent) - 1] == content
+

@@ -1,3 +1,5 @@
+from fileinput import filename
+from typing import Any
 from urllib import request
 from pydantic import BaseModel, validator, StrictStr
 
@@ -20,13 +22,6 @@ class Quote(BaseModel):
         return value
 
 class GetFileCommand(BaseModel):
-    path: StrictStr
-
-    @validator("path")
-    def check_is_valid_path(cls, value: str):
-        try:
-            open(value, 'w')
-        except OSError:
-            raise ValueError("path should be a valid path of an existing file")
-        return value
+    file_name: StrictStr
+    file_content: Any
 

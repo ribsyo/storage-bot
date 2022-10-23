@@ -105,6 +105,32 @@ json = {
     ]
 }
 
+json = {
+    "name": "get_cat",
+    "type": 1,
+    "description": "get a cat picture",
+}
+
+
+json = {
+    "name": "get_file",
+    "type": 1,
+    "description": "get a cat picture",
+    "options":[
+        {
+            "name" : "file_path",
+            "description": "input the path",
+            "type": 3,
+            "required": True,
+        },
+    ]
+}
+
+json = {
+    "name": "get_file_list",
+    "type": 1,
+    "description": "get a list of files",
+}
 # For authorization, you can use either your bot token
 headers = {
     "Authorization": "Bot " + os.environ["DISCORD_TOKEN"]
