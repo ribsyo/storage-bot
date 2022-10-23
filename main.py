@@ -3,9 +3,12 @@
 
 from array import array
 from ctypes import sizeof
+from fileinput import filename
 import json
+from nturl2path import url2pathname
 import os
 import pprint
+from urllib import request
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 from nacl.signing import VerifyKey
@@ -13,27 +16,26 @@ from nacl.exceptions import BadSignatureError
 from dotenv import load_dotenv
 import random
 import requests
-from models import Quote, File
-from classes import QuoteManager, FileManager
+from models import Quote, File, GetFileCommand
+from classes import DiscordFileManager, QuoteManager, FileManager
+import base64
+import pathlib
+from starlette.responses import StreamingResponse
+
 
 
 
 load_dotenv()
 PUBLIC_KEY = os.environ["PUBLIC_KEY"]
-print(PUBLIC_KEY)
 verify_key = VerifyKey(bytes.fromhex(PUBLIC_KEY))
+WEBHOOK_URL = os.environ["WEBHOOK_URL"]
+STORAGE_FOLDER_PATH=os.environ["STORAGE_FOLDER_PATH"]
 
 app = FastAPI()
 
 quoteFileManager = FileManager("quotes.txt")
 quoteManager = QuoteManager(quoteFileManager.get_all_lines())
-
-@app.get("/")
-def hi():
-    command = quoteManager.give_quote()
-    return JSONResponse(status_code=200, content={
-    "msg" : command.quote
-    })
+discordFileManager = DiscordFileManager(FileManager("cat.jpg"),STORAGE_FOLDER_PATH)
 
 @app.post("/")
 async def hello(
@@ -67,7 +69,7 @@ async def hello(
             }
         })
     if body_json["data"]["name"] == "quote":
-        command = quoteManager.give_quote()
+        command = quoteManager.get_quote()
         print("here")
         return JSONResponse(status_code=200, content={
             "type": 4,
@@ -100,7 +102,7 @@ async def hello(
             file_type = body_json["data"]["options"][2]["value"],
             file_content = response.content
         )
-        save_file(command)
+        discordFileManager.save_file(command)
         return JSONResponse(status_code=200, content={
             "type": 4,
             "data": {
@@ -110,26 +112,54 @@ async def hello(
                 "allowed_mentions": { "parse": [] }
             }
         })
-    if body_json["data"]["name"] == "load_file":
+    if body_json["data"]["name"] == "get_cat":
+        file = GetFileCommand(
+            file_name= 'cat.jpg',
+            file_content=open('cat.jpg','rb')
+        )
+        send_file(WEBHOOK_URL, file.file_content)
         return JSONResponse(status_code=200, content={
             "type": 4,
             "data": {
                 "tts": False,
                 "content": "",
-                "embeds": [],
-                "allowed_mentions": { "parse": [] }
-                #add attachments
-            }
+                "allowed_mentions": { "parse": [] },
+            },
+        })
+    if body_json["data"]["name"] == "get_file":
+        file = discordFileManager.get_file(body_json["data"]["options"][0]["value"])
+        send_file(WEBHOOK_URL,file.file_content)
+        return JSONResponse(status_code=200, content={
+            "type": 4,
+            "data": {
+                "tts": False,
+                "content": "",
+                "allowed_mentions": { "parse": [] },
+            },
+        })
+    if body_json["data"]["name"] == "get_file_list":
+        file_list = discordFileManager.get_all_files()
+        message = ''
+        for x in file_list:
+            message += x + '\n'
+        return JSONResponse(status_code=200, content={
+            "type": 4,
+            "data": {
+                "tts": False,
+                "content": message,
+                "allowed_mentions": { "parse": [] },
+            },
         })
 
         
 
 
+tempFileManager = FileManager("cat.jpg")
 
 
-def save_file(command: File) -> File:
-    with open(command.file_name + command.file_type, "wb") as f:
-        f.write(command.file_content)
-    return command
-
+def send_file(webhook_url: str, file: any):
+    files = {
+        'media':file
+    }
+    requests.post(webhook_url,files=files)
 
