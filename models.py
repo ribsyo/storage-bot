@@ -1,6 +1,4 @@
-from fileinput import filename
 from typing import Any
-from urllib import request
 from pydantic import BaseModel, validator, StrictStr
 
 

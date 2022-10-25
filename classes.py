@@ -1,9 +1,8 @@
+import os.path
 from ast import Str
-from models import Quote, File, GetFileCommand
 
 import magic
-import os.path
-from stat import ST_SIZE
+from models import Quote, File, GetFileCommand
 
 
 from google.auth.transport.requests import Request

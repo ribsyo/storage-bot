@@ -1,28 +1,17 @@
-# main.py
-
-
-from array import array
-from ctypes import sizeof
-from fileinput import filename
 import json
-from nturl2path import url2pathname
 import os
 import pprint
-from urllib import request
+
+import requests
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 from nacl.signing import VerifyKey
 from nacl.exceptions import BadSignatureError
-from dotenv import load_dotenv
-import random
-import requests
-from models import Quote, File, GetFileCommand
-from classes import DiscordFileManager, QuoteManager, FileManager
-import base64
-import pathlib
 from starlette.responses import StreamingResponse
 
-
+from models import Quote, File, GetFileCommand
+from classes import DiscordFileManager, QuoteManager, FileManager
 
 
 load_dotenv()
