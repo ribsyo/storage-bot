@@ -24,11 +24,11 @@ requirments
 
 
 .env file requires:
-	- BOT_TOKEN (the token of your discord application)
-	- PUBLIC_KEY (the key of your discord application)
-	- WEBHOOK_URL(a webhook url of the Guild Channel files will be sent to)
-	- APPLICATION_ID(the id of your discord application)
-	- STORAGE_FOLDER_LOCATION(relative path to where files will be stored and accessed)
+- BOT_TOKEN (the token of your discord application)
+- PUBLIC_KEY (the key of your discord application)
+- WEBHOOK_URL(a webhook url of the Guild Channel files will be sent to)
+- APPLICATION_ID(the id of your discord application)
+- STORAGE_FOLDER_LOCATION(relative path to where files will be stored and accessed)
 Refer to .env.example
 
 This application uses python FastApi. Link to FastApi website https://fastapi.tiangolo.com/
