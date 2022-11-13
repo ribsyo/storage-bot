@@ -1,3 +1,7 @@
+
+
+https://user-images.githubusercontent.com/44041113/201510783-957d0cd3-b345-4335-b987-e790bad43dd2.mp4
+
 # Storage Bot
 
 this discord bot will manage remote storage options per user through discord. And eventually be able to connect to a cloud storage system of the user’s choice.
