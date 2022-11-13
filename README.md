@@ -4,17 +4,17 @@ this discord bot will manage remote storage options per user through discord. An
 
 This application is still in development.
 
-For Users:
+###### For Users:
 	Invite the bot to the guild you would like to access it from. The bot will only take slash commands. 
-    Main commands:
-    - save_file: saves file with provided link into folder
-    - get_file_list: returns paths for every file in folder
-    - get_file: requires valid path(from get_file_list)
+###### Main commands:
+- save_file: saves file with provided link into folder
+- get_file_list: returns paths for every file in folder
+- get_file: requires valid path(from get_file_list)
 
 
 ## Getting Started
 
-requirments
+###### requirments
 - vscode (containers extension)
 - docker
 
@@ -23,7 +23,7 @@ requirments
 3. Open devcontainer when prompted
 
 
-.env file requires:
+###### .env file requires:
 - BOT_TOKEN (the token of your discord application)
 - PUBLIC_KEY (the key of your discord application)
 - WEBHOOK_URL(a webhook url of the Guild Channel files will be sent to)
