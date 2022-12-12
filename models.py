@@ -1,5 +1,6 @@
-from typing import Any
-from pydantic import BaseModel, validator, StrictStr
+from typing import Any, Literal, Optional, Tuple
+from pydantic import BaseModel, validator, Field, StrictStr
+
 
 
 
@@ -23,3 +24,43 @@ class GetFileCommand(BaseModel):
     file_name: StrictStr
     file_content: Any
 
+class DiscordCommandDataOption(BaseModel):
+    value: str
+
+class DiscordAddQuoteCommandData(BaseModel):
+    name: Literal["add_quote"]
+    options: Tuple[DiscordCommandDataOption]
+
+
+class DiscordSaveFileCommandData(BaseModel):
+    name: Literal["save_file"]
+    options: Tuple[
+        DiscordCommandDataOption,
+        DiscordCommandDataOption,
+        DiscordCommandDataOption
+    ]
+
+class DiscordGetFileCommandData(BaseModel):
+    name: Literal["get_file"]
+    options: Tuple[DiscordCommandDataOption]
+
+class DiscordGetFileListCommand(BaseModel):
+    name: Literal["get_file_list"]
+
+class DiscordCommand(BaseModel):
+    data: DiscordAddQuoteCommandData | DiscordSaveFileCommandData | DiscordGetFileListCommand | DiscordGetFileCommandData = Field(
+        ...,
+        discriminator="name"
+    )
+    type: int
+
+
+class DiscordMessageResponse(BaseModel):
+    tts: bool
+    content: StrictStr
+    embeds: Optional[list]
+
+
+class DiscordResponse(BaseModel):
+    type: int
+    data: DiscordMessageResponse()
