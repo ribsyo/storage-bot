@@ -12,7 +12,7 @@ from starlette.responses import StreamingResponse
 
 from models import Quote, File, GetFileCommand
 from classes import DiscordFileManager, QuoteManager, FileManager
-
+from discordRequestHandler import DiscordRequestHandler
 
 load_dotenv()
 PUBLIC_KEY = os.environ["PUBLIC_KEY"]
@@ -22,10 +22,11 @@ STORAGE_FOLDER_PATH=os.environ["STORAGE_FOLDER_PATH"]
 
 app = FastAPI()
 
-quoteFileManager = FileManager("quotes.txt")
-quoteManager = QuoteManager(quoteFileManager.get_all_lines())
+fileManager = FileManager("quotes.txt")
+quoteManager = QuoteManager(fileManager.get_all_lines())
 discordFileManager = DiscordFileManager(FileManager("cat.jpg"),STORAGE_FOLDER_PATH)
 
+requestsHandler = DiscordRequestHandler(discordFileManager,quoteManager,fileManager)
 @app.post("/")
 async def hello(
     request: Request,
@@ -46,6 +47,11 @@ async def hello(
 
     if body_json["type"] == 1:
         return JSONResponse(status_code=200, content=dict(type=1))
+    else:
+        response = requestsHandler.handle_request(body_json)
+        return response
+
+"""
     if body_json["data"]["name"] == "test":
         pprint.pprint(body_json, indent=2)
         return JSONResponse(status_code=200, content={
@@ -139,16 +145,12 @@ async def hello(
                 "allowed_mentions": { "parse": [] },
             },
         })
-
+"""
         
 
 
 tempFileManager = FileManager("cat.jpg")
 
 
-def send_file(webhook_url: str, file: any):
-    files = {
-        'media':file
-    }
-    requests.post(webhook_url,files=files)
+
 

@@ -40,15 +40,19 @@ class DiscordSaveFileCommandData(BaseModel):
         DiscordCommandDataOption
     ]
 
+class DiscordGetQuoteCommandData(BaseModel):
+    name: Literal["quote"]
+
+
 class DiscordGetFileCommandData(BaseModel):
     name: Literal["get_file"]
     options: Tuple[DiscordCommandDataOption]
 
-class DiscordGetFileListCommand(BaseModel):
+class DiscordGetFileListCommandData(BaseModel):
     name: Literal["get_file_list"]
 
 class DiscordCommand(BaseModel):
-    data: DiscordAddQuoteCommandData | DiscordSaveFileCommandData | DiscordGetFileListCommand | DiscordGetFileCommandData = Field(
+    data: DiscordAddQuoteCommandData | DiscordSaveFileCommandData | DiscordGetFileListCommand | DiscordGetFileCommandData | DiscordGetQuoteCommandData = Field(
         ...,
         discriminator="name"
     )

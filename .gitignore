@@ -2,3 +2,5 @@ __pycache__
 .env
 token.json
 credentials.json
+discord-requests-handler.py
+.gitignore
